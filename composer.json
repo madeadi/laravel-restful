@@ -1,0 +1,12 @@
+{
+    "name": "taksu/laravel-restful",
+    "description": "Restful extension for Laravel by Taksu Tech",
+    "type": "library",
+    "authors": [
+        {
+            "name": "madeadi",
+            "email": "made.adi@gmail.com"
+        }
+    ],
+    "require": {}
+}
