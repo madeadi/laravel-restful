@@ -1,12 +1,20 @@
 {
-    "name": "taksu/laravel-restful",
-    "description": "Restful extension for Laravel by Taksu Tech",
-    "type": "library",
-    "authors": [
-        {
-            "name": "madeadi",
-            "email": "made.adi@gmail.com"
-        }
-    ],
-    "require": {}
+  "name": "taksu/laravel-restful",
+  "description": "Restful extension for Laravel by Taksu Tech",
+  "type": "library",
+  "authors": [
+    {
+      "name": "madeadi",
+      "email": "made.adi@gmail.com"
+    }
+  ],
+  "require": {
+    "laravel/framework": "^8.55",
+    "laravel-notification-channels/fcm": "^2.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Taksu\\": "app/"
+    }
+  }
 }
