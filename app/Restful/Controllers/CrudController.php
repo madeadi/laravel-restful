@@ -17,6 +17,8 @@ class CrudController extends Controller
 
     /** @var JsonResource */
     protected $resourceClass;
+    /** @var string[] */
+    public $relations;
 
     public function __construct(Request $request)
     {
@@ -128,5 +130,16 @@ class CrudController extends Controller
         $originalFilter = data_get($data, 'filter', []);
         $filters = is_string($originalFilter) ? json_decode($originalFilter, true) : $originalFilter;
         return $filters;
+    }
+
+    /**
+     * A helper function to return resource/model with relations
+     * @param type $model
+     * @return type
+     */
+    public function resource($model)
+    {
+        $model->load($this->relations);
+        return ($this->resourceClass) ? new $this->resourceClass($model) : $model;
     }
 }
