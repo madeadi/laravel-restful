@@ -18,12 +18,13 @@ class CrudController extends Controller
     /** @var JsonResource */
     protected $resourceClass;
     /** @var string[] */
-    public $relations;
+    public $relations = [];
 
     public function __construct(Request $request)
     {
         $this->resourceName = $this->resolveResourceName($request->path());
         // $this->service = ServiceFactory::get($this->resourceName);
+
     }
 
     private function resolveResourceName(string $path)
