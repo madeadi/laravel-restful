@@ -71,15 +71,12 @@ class ModelService
 
     public function findOne($id)
     {
-        $model = $this->model::findOrFail($id);
-        return $this->resource($model);
+        return $this->model::findOrFail($id);
     }
 
     public function create($data)
     {
-        $model = $this->model::create($data);
-
-        return $this->resource($model);
+        return $this->model::create($data);
     }
 
     public function update($id, $data)
@@ -88,7 +85,7 @@ class ModelService
         $model->fill($data);
         $model->save();
 
-        return $this->resource($model);
+        return $model;
     }
 
     /**

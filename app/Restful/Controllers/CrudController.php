@@ -49,7 +49,8 @@ class CrudController extends Controller
 
     public function show($id)
     {
-        return $this->service->findOne($id);
+        $model = $this->service->findOne($id);
+        return $this->resource($model);
     }
 
     public function store(Request $request)
@@ -60,7 +61,7 @@ class CrudController extends Controller
         $model = $this->service->create($body);
 
         // Return
-        return response()->json($model, 201);
+        return response()->json($this->resource($model), 201);
     }
 
     public function update(Request $request, $id)
@@ -71,7 +72,7 @@ class CrudController extends Controller
         $model = $this->service->update($id, $body);
 
         // Return
-        return response()->json($model, 200);
+        return response()->json($this->resource($model), 200);
     }
 
     public function destroy($id)
