@@ -6,7 +6,6 @@ use Exception;
 use function GuzzleHttp\json_decode;
 use function GuzzleHttp\json_encode;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Taksu\Restful\Controllers\Controller;
 
 class CrudController extends Controller
@@ -15,7 +14,6 @@ class CrudController extends Controller
     protected $resource;
     protected $resourceName;
 
-    /** @var JsonResource */
     protected $resourceClass;
     /** @var string[] */
     public $relations = [];
