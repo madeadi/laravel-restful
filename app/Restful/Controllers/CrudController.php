@@ -134,8 +134,6 @@ class CrudController extends Controller
 
     /**
      * A helper function to return resource/model with relations
-     * @param type $model
-     * @return type
      */
     public function resource($model)
     {
