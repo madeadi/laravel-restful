@@ -12,7 +12,7 @@ use Taksu\Restful\Traits\ModelCommonTrait;
 
 class CrudController extends Controller
 {
-    public function __construct(protected $model, protected $resourceClass = null, protected $relations = [])
+    public function __construct(protected $model, protected $resourceClass = null, protected $relations = [], protected $createAction = null, protected $updateAction = null, protected $deleteAction = null)
     {
     }
 
@@ -62,7 +62,13 @@ class CrudController extends Controller
 
     public function store(Request $request)
     {
-        $model = $this->model::create($request->all());
+        $model = null;
+        if ($this->createAction) {
+            $model = $this->createAction::run($request->all());
+        } else {
+            $model = $this->model::create($request->all());
+        }
+
         return response()->json($this->resource($model), 201);
     }
 
