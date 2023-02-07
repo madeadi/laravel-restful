@@ -20,3 +20,9 @@ class AdminController extends CrudController
     }
 }
 ```
+
+Add in the `routes\api.php` 
+
+```
+Route::apiResource('admins', AdminController::class);
+```
