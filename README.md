@@ -5,6 +5,17 @@ Create a controller class and extends it from `CrudController`.
 
 Example: 
 
+use `CommonModelTrait` on the model. 
+
+```php
+class Admin extends Model
+{
+    use ModelCommonTrait;
+    ...
+}
+```
+
+
 ```php
 
 namespace App\Http\Controllers;
@@ -19,4 +30,16 @@ class AdminController extends CrudController
         parent::__construct(Admin::class);
     }
 }
+```
+
+Add in the `routes\api.php` 
+
+```
+Route::apiResource('admins', AdminController::class);
+```
+
+Finally, query the API
+
+```
+GET localhost:8000/api/admins
 ```
