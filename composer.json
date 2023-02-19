@@ -16,5 +16,7 @@
     "psr-4": {
       "Taksu\\": "app/"
     }
-  }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
 }
