@@ -50,7 +50,7 @@ class MakeCrudController extends GeneratorCommand
      */
     protected function getStub()
     {
-        return  app_path() . '/Console/Commands/Stubs/make-crud-controller.stub';
+        return  __DIR__ . '/Stubs/make-crud-controller.stub';
     }
 
     /**
