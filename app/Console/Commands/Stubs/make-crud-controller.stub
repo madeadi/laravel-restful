@@ -1,0 +1,16 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Resources\CrudModelResource;
+use Taksu\Restful\Controllers\CrudController;
+use App\Models\CrudModel;
+
+class CrudModelController extends CrudController
+{
+    public function __construct()
+    {
+        parent::__construct(CrudModel::class, CrudModelResource::class);
+        $this->relations = [];
+    }
+}

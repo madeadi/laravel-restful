@@ -52,7 +52,7 @@ public function boot()
 {
     if ($this->app->runningInConsole()) {
         $this->commands([
-            MakeCrudController::class,
+            Taksu\Console\Commands\MakeCrudController::class,
         ]);
     }
 }

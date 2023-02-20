@@ -1,6 +1,6 @@
 <?php
 
-namespace Taksu\Console;
+namespace Taksu\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\Artisan;
