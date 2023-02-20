@@ -43,3 +43,17 @@ Finally, query the API
 ```
 GET localhost:8000/api/admins
 ```
+
+
+To install the console commands, in `AppServiceProvider`, add the following: 
+
+```
+public function boot()
+{
+    if ($this->app->runningInConsole()) {
+        $this->commands([
+            MakeCrudController::class,
+        ]);
+    }
+}
+```
