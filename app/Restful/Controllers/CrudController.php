@@ -169,30 +169,93 @@ class CrudController extends Controller
         // filter is string. We need to json_decode it into an array.
         $filter = Arr::get($data, 'filter', []);
         $filters = is_string($filter) ? json_decode($filter, true) : $filter;
+
+        // The key is the column in the database table. For special case, the key can be a relation column.
+        // The value is an object that can contain operator, function, and value. Can choose to use operator or function.
+        // The operator is a Mysql Comparison Operators
         foreach ($filters as $filterColumn => $filterValue) {
-            if ($filterColumn == 'id') {
-                // if $data contains id string, then filter based on primary keys (ids)
-                // e.g. filter: {"id":"20,22,24,26,28,30,32,34,36,38"}
-                $primaryKeyName = (new $model)->getKeyName();
-                $ids = explode(",", $filterValue);
-                $builder->whereIn($primaryKeyName, $ids);
-            } elseif ($filterColumn == 'created_date_from') {
-                if (array_search('created_at', $columns) !== false) {
-                    $builder->whereDate('created_at', '>=', $filterValue);
+            // The format of the relation column is "relationTable.relationColumn". Please note the dot.
+            // Example of using contain relation:
+            // http://localhost:8000/api/some-module?filter={"schedules.schedule_id": {"operator": "=", "value": "01gy9d4rhw1j2v2nwrcmnnmzr7"}}
+            $delimiter = '.';
+            if (strpos($filterColumn, $delimiter) !== false) {
+                $explodeFilterColumn = explode($delimiter, $filterColumn);
+                $relationTable = array_shift($explodeFilterColumn);
+                $relationColumn = implode($delimiter, $explodeFilterColumn);
+                $builder->whereRelation($relationTable, $relationColumn, $filterValue['operator'], $filterValue['value']);
+            }
+            else {
+                // The value can contain a function.
+                // The value for function can be one of these: date, time, day, month, year, in, and between. 
+                // This will be converted into Laravel query builder.
+                // Example of using:
+                // http://localhost:8000/api/some-module?filter={"time_in": {"function": "month", "value": "04"}}
+                if (!empty($filterValue['function'])) {
+                    switch ($filterValue['function']) {
+                        case 'date':
+                            $builder->whereDate($filterColumn, $filterValue['value']);
+                            break;
+
+                        case 'time':
+                            $builder->whereTime($filterColumn, $filterValue['value']);
+                            break;
+
+                        case 'day':
+                            $builder->whereDay($filterColumn, $filterValue['value']);
+                            break;
+                        
+                        case 'month':
+                            $builder->whereMonth($filterColumn, $filterValue['value']);
+                            break;
+                            
+                        case 'year':
+                            $builder->whereYear($filterColumn, $filterValue['value']);
+                            break;
+
+                        case 'in':
+                            // the value is comma separated, e.g 1,3,7,9
+                            $values = explode(',', $filterValue['value']);
+                            $builder->whereIn($filterColumn, $values);
+                            break;
+
+                        case 'between':
+                            // the value is comma separated, e.g 1,5
+                            // can be a date also, e.g 2023-01-01,2023-01-31
+                            $values = explode(',', $filterValue['value']);
+                            $builder->whereBetween($filterColumn, $values);
+                            break;
+                        
+                        default:
+                            $builder;
+                            break;
+                    }
                 }
-            } elseif ($filterColumn == 'created_date_to') {
-                if (array_search('created_at', $columns) !== false) {
-                    $builder->whereDate('created_at', '<=', $filterValue);
+                else {
+                    if ($filterColumn == 'id') {
+                        // if $data contains id string, then filter based on primary keys (ids)
+                        // e.g. filter: {"id":"20,22,24,26,28,30,32,34,36,38"}
+                        $primaryKeyName = (new $model)->getKeyName();
+                        $ids = explode(",", $filterValue);
+                        $builder->whereIn($primaryKeyName, $ids);
+                    } elseif ($filterColumn == 'created_date_from') {
+                        if (array_search('created_at', $columns) !== false) {
+                            $builder->whereDate('created_at', '>=', $filterValue);
+                        }
+                    } elseif ($filterColumn == 'created_date_to') {
+                        if (array_search('created_at', $columns) !== false) {
+                            $builder->whereDate('created_at', '<=', $filterValue);
+                        }
+                    } elseif ($filterColumn == 'status') {
+                        // Filter for one or many statuses
+                        if (array_search($filterColumn, $columns) !== false) {
+                            $statuses = explode(',', $filterValue);
+                            $builder->whereIn($filterColumn, $statuses);
+                        }
+                    } elseif (array_search($filterColumn, $columns) !== false) {
+                        // otherwise, filter normally based on the table's columns
+                        $builder->where($filterColumn, "=", $filterValue);
+                    }
                 }
-            } elseif ($filterColumn == 'status') {
-                // Filter for one or many statuses
-                if (array_search($filterColumn, $columns) !== false) {
-                    $statuses = explode(',', $filterValue);
-                    $builder->whereIn($filterColumn, $statuses);
-                }
-            } elseif (array_search($filterColumn, $columns) !== false) {
-                // otherwise, filter normally based on the table's columns
-                $builder->where($filterColumn, "=", $filterValue);
             }
         }
 
