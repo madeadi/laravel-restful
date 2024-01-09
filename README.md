@@ -1,23 +1,59 @@
-# Laravel Setting
+# Laravel Restful
 
-This is the Setting package that is used by Taksu.tech projects. 
+# To use
+Create a controller class and extends it from `CrudController`. 
 
-# Installation
+Example: 
 
-Run composer require.
-```
-composer require madeadi/laravel-settings
-```
+use `CommonModelTrait` on the model. 
 
-Add the service provider to `config/app.php`
-```
-"providers" => [
-    ...,
-    Madeadi\Settings\ServiceProvider::class,
-]
+```php
+class Admin extends Model
+{
+    use ModelCommonTrait;
+    ...
+}
 ```
 
-Publish the migration file to create the table. 
+
+```php
+
+namespace App\Http\Controllers;
+
+use App\Models\Admin;
+use Taksu\Restful\Controllers\CrudController;
+
+class AdminController extends CrudController
+{
+    public function __construct()
+    {
+        parent::__construct(Admin::class);
+    }
+}
 ```
-php artisan vendor:publish --provider "Madeadi\Settings\ServiceProvider" --tag migrations
+
+Add in the `routes\api.php` 
+
+```
+Route::apiResource('admins', AdminController::class);
+```
+
+Finally, query the API
+
+```
+GET localhost:8000/api/admins
+```
+
+
+To install the console commands, in `AppServiceProvider`, add the following: 
+
+```
+public function boot()
+{
+    if ($this->app->runningInConsole()) {
+        $this->commands([
+            Taksu\Console\Commands\MakeCrudController::class,
+        ]);
+    }
+}
 ```
