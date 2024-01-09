@@ -1,20 +1,21 @@
 {
-    "name": "madeadi/laravel-settings",
-    "description": "Contain setting package that Taksu.tech always use",
-    "type": "library",
-    "require": {
-        "php": "^8.1",
-        "laravel/framework": "^10.0"
-    },
-    "authors": [
-        {
-            "name": "made.adi",
-            "email": "made.adi@gmail.com"
-        }
-    ],
-    "autoload": {
-        "psr-4": {
-            "Taksu\\Settings\\": "src"
-        }
+  "name": "taksu-tech/laravel-restful",
+  "description": "Restful extension for Laravel by Taksu Tech",
+  "type": "library",
+  "authors": [
+    {
+      "name": "madeadi",
+      "email": "made.adi@gmail.com"
     }
+  ],
+  "require": {
+    "laravel/framework": "^9.0 || ^10.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Taksu\\": "app/"
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
 }
