@@ -8,8 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Taksu\Restful\Traits\ModelCommonTrait;
 
-use function GuzzleHttp\json_decode;
-
 class CrudController extends Controller
 {
     public function __construct(protected $model, protected $resourceClass = null, protected $relations = [], protected $createAction = null, protected $updateAction = null, protected $deleteAction = null) {}
