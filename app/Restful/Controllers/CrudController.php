@@ -197,10 +197,17 @@ class CrudController extends Controller
                     if (is_string($filterValue)) {
                         $query->where($relationColumn, '=', $filterValue);
                     } else {
-                        if ($filterValue['operator'] === 'in') {
-                            $query->whereIn($relationColumn, explode(',', $filterValue['value']));
+                        if (!empty($filterValue['function'])) {
+                            $this->applyFunctionFilter($query, $relationColumn, $filterValue);
                         } else {
-                            $query->where($relationColumn, $filterValue['operator'] ?? '=', $filterValue['value']);
+                            switch ($filterValue['operator'] ?? '=') {
+                                case 'in':
+                                    $query->whereIn($relationColumn, explode(',', $filterValue['value']));
+                                    break;
+                                default:
+                                    $query->where($relationColumn, $filterValue['operator'] ?? '=', $filterValue['value']);
+                                    break;
+                            }
                         }
                     }
                 });
@@ -211,50 +218,7 @@ class CrudController extends Controller
                 // Example of using:
                 // http://localhost:8000/api/some-module?filter={"time_in": {"function": "month", "value": "04"}}
                 if (! empty($filterValue['function'])) {
-                    $operator = $filterValue['operator'] ?? '=';
-
-                    switch ($filterValue['function']) {
-                        case 'date':
-                            $builder->whereDate($filterColumn, $operator, $filterValue['value']);
-                            break;
-
-                        case 'time':
-                            $builder->whereTime($filterColumn, $operator, $filterValue['value']);
-                            break;
-
-                        case 'day':
-                            $builder->whereDay($filterColumn, $operator, $filterValue['value']);
-                            break;
-
-                        case 'month':
-                            $builder->whereMonth($filterColumn, $operator, $filterValue['value']);
-                            break;
-
-                        case 'year':
-                            $builder->whereYear($filterColumn, $operator, $filterValue['value']);
-                            break;
-
-                        case 'in':
-                            // the value is comma separated, e.g 1,3,7,9
-                            $values = explode(',', $filterValue['value']);
-                            $builder->whereIn($filterColumn, $values);
-                            break;
-
-                        case 'between':
-                            // the value is comma separated, e.g 1,5
-                            // can be a date also, e.g 2023-01-01,2023-01-31
-                            $values = explode(',', $filterValue['value']);
-                            $builder->whereBetween($filterColumn, $values);
-                            break;
-
-                        case 'like':
-                            $builder->where($filterColumn, 'like', '%'.$filterValue['value'].'%');
-                            break;
-
-                        default:
-                            $builder;
-                            break;
-                    }
+                    $this->applyFunctionFilter($builder, $filterColumn, $filterValue);
                 } else {
                     if ($filterColumn == 'id') {
                         // if $data contains id string, then filter based on primary keys (ids)
@@ -312,6 +276,62 @@ class CrudController extends Controller
         $relations = request()->get('relations');
         if ($relations) {
             $this->relations = explode(',', $relations);
+        }
+    }
+
+    /**
+     * Apply function-based filters to a query builder
+     *
+     * @param Builder|\Illuminate\Database\Eloquent\Relations\Relation $query
+     * @param string $column
+     * @param array $filterValue
+     * @return void
+     */
+    private function applyFunctionFilter($query, string $column, array $filterValue): void
+    {
+        $operator = $filterValue['operator'] ?? '=';
+
+        switch ($filterValue['function']) {
+            case 'date':
+                $query->whereDate($column, $operator, $filterValue['value']);
+                break;
+
+            case 'time':
+                $query->whereTime($column, $operator, $filterValue['value']);
+                break;
+
+            case 'day':
+                $query->whereDay($column, $operator, $filterValue['value']);
+                break;
+
+            case 'month':
+                $query->whereMonth($column, $operator, $filterValue['value']);
+                break;
+
+            case 'year':
+                $query->whereYear($column, $operator, $filterValue['value']);
+                break;
+
+            case 'in':
+                $values = explode(',', $filterValue['value']);
+                $query->whereIn($column, $values);
+                break;
+
+            case 'between':
+                $values = explode(',', $filterValue['value']);
+                $query->whereBetween($column, $values);
+                break;
+
+            case 'like':
+                $query->where($column, 'like', '%'.$filterValue['value'].'%');
+                break;
+
+            case 'json-contains':
+                $query->whereJsonContains($column, $filterValue['value']);
+                break;
+
+            default:
+                break;
         }
     }
 }
